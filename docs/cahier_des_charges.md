@@ -1,0 +1,12 @@
+# CAHIER DES CHARGES
+
+ HealthAI Coach souhaite mettre en place une infrastructure technique robuste afin de collecter des données hétérogènes (issues d’APIs publiques, de jeux de données open data et de fichiers simulant les données biométriques des utilisateurs), de les transformer et de les stocker dans une base relationnelle unique. L’objectif est double : D’une part, disposer d’un référentiel fiable et de qualité pour préparer les travaux futurs en intelligence artificielle (recommandations personnalisées), et d’autre part, fournir aux équipes produit un tableau de bord interactif permettant de visualiser les indicateurs essentiels (progression des utilisateurs, habitudes nutritionnelles, suivi d’activité).
+ 
+ 
+  L’entreprise attend que ce socle technique soit automatisé, sécurisé et reproductible, afin de réduire au maximum les interventions manuelles et de faciliter son déploiement dans différents environnements. L’ensemble doit être conçu pour évoluer : il servira de base à l’ajout ultérieur de micro-services (notamment des modules IA de prédiction et de personnalisation). 
+  
+  
+  La mission confiée consiste à concevoir, développer et livrer le backend métier de la future plateforme HealthAI Coach. Concrètement, il s’agit : de mettre en œuvre un système de collecte automatisée capable d’intégrer différentes sources de données, en respectant les contraintes de sécurité et de fiabilité, de développer un processus de transformation et de nettoyage garantissant l’exploitabilité des données (qualité, cohérence, complétude), de concevoir et implémenter une base de données relationnelle adaptée aux besoins de l’entreprise, accompagnée d’une documentation claire et de scripts de migration, de proposer une API REST permettant à la fois aux applications front-end (mobile/web) et aux équipes internes de consulter et d’exploiter les données consolidées, et enfin, de livrer une interface de visualisation accessible permettant de suivre les indicateurs clés pour la direction et les partenaires de HealthAI Coach. 
+  
+  
+  Ces éléments doivent être conçus dans une logique industrielle : l’entreprise n’attend pas une démonstration technique isolée, mais bien un prototype structuré, respectant les bonnes pratiques de développement et prêt à être intégré dans son écosystème global.
