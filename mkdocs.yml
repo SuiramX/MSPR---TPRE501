@@ -1,0 +1,36 @@
+site_name: MSPR TPRE501 Documentation
+site_description: Documentation du projet
+site_author: best_team
+theme:
+  name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: slate
+      primary: blue
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Désactiver le mode nocturne
+
+    # Palette toggle for dark mode
+    - scheme: default
+      primary: grey
+      accent: light green
+      toggle:
+        icon: material/weather-sunny
+        name: Activer le mode nocturne
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - header.autohide
+
+nav:
+  - Accueil: index.md
+  - "Cahier des charges": cahier_des_charges.md
+  - "Pipeline ETL":
+      - "Brainstorming": Pipeline_ETL/brainstorming.md
+  - "Stacks":
+      - "Fastapi": Stacks/fastapi.md
+  - Guide: guide.md
+
+plugins: []
