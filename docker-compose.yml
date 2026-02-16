@@ -43,8 +43,10 @@ services:
       - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus  # volume persistan
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'  # chemin de stockage persistant
 
   grafana:
     image: grafana/grafana
@@ -74,3 +76,4 @@ services:
 volumes:
   postgres_data:
   grafana_data:
+  prometheus_data:
