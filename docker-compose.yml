@@ -13,7 +13,7 @@ services:
       - ./data:/data
 
   etl:
-    build: 
+    build:
       context: ./app
       dockerfile: Dockerfile
     container_name: mspr-etl
@@ -22,9 +22,9 @@ services:
     depends_on:
       - db
     volumes:
-      - ./app:/app
+      - ./src:/app
       - ./data:/data
-    command: ["python", "run_etl.py"]
+    command: ["python", "main.py"]
 
   db:
     image: postgres:15
