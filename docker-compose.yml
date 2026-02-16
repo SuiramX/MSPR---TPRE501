@@ -53,11 +53,17 @@ services:
     container_name: mspr-grafana
     ports:
       - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_USERS_ALLOW_SIGN_UP=false
     depends_on:
       - prometheus
     volumes:
       - grafana_data:/var/lib/grafana
-  
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+
   etl:
     build:
       context: ./app
@@ -71,7 +77,6 @@ services:
       - ./src:/app
       - ./data:/data
     command: ["python", "main.py"]
-
 
 volumes:
   postgres_data:
