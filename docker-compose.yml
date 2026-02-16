@@ -12,7 +12,6 @@ services:
       - ./app:/app
       - ./data:/data
 
-
   db:
     image: postgres:15
     container_name: mspr-db
@@ -26,6 +25,16 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
   
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: mspr-postgres-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://user:password@db:5432/mspr?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      - db
 
   prometheus:
     image: prom/prometheus
