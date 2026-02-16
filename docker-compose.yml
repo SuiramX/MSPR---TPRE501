@@ -12,6 +12,20 @@ services:
       - ./app:/app
       - ./data:/data
 
+  etl:
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: mspr-etl
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mspr
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app
+      - ./data:/data
+    command: ["python", "run_etl.py"]
+
   db:
     image: postgres:15
     container_name: mspr-db

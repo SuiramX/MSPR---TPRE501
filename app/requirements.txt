@@ -7,3 +7,4 @@ requests
 apscheduler
 prometheus-client
 werkzeug
+openpyxl
