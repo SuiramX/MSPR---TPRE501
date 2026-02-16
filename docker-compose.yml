@@ -12,19 +12,6 @@ services:
       - ./app:/app
       - ./data:/data
 
-  etl:
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    container_name: mspr-etl
-    environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/mspr
-    depends_on:
-      - db
-    volumes:
-      - ./src:/app
-      - ./data:/data
-    command: ["python", "main.py"]
 
   db:
     image: postgres:15
@@ -38,6 +25,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  
 
   prometheus:
     image: prom/prometheus
@@ -58,6 +46,21 @@ services:
       - prometheus
     volumes:
       - grafana_data:/var/lib/grafana
+  
+  etl:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    container_name: mspr-etl
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/mspr
+    depends_on:
+      - db
+    volumes:
+      - ./src:/app
+      - ./data:/data
+    command: ["python", "main.py"]
+
 
 volumes:
   postgres_data:
