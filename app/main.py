@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 import uvicorn
-from routers import members, foods, exercises, workouts, plans
+from routers import members, foods, exercises, workouts, plans, exports
 
 app = FastAPI(
     title="HealthAI Coach API",
@@ -14,6 +14,7 @@ app.include_router(foods.router)
 app.include_router(exercises.router)
 app.include_router(workouts.router)
 app.include_router(plans.router)
+app.include_router(exports.router)
 
 
 @app.get("/", tags=["Health"])
