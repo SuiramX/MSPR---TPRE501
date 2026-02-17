@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
+from security import verify_api_key
 import models, schemas
 
 router = APIRouter(prefix="/workouts", tags=["Workouts"])
@@ -25,7 +26,7 @@ def get_workouts_by_member(member_id: int, db: Session = Depends(get_db)):
     return db.query(models.Workout).filter(models.Workout.member_id == member_id).all()
 
 
-@router.post("/", response_model=schemas.WorkoutRead, status_code=201)
+@router.post("/", response_model=schemas.WorkoutRead, status_code=201, dependencies=[Depends(verify_api_key)])
 def create_workout(workout: schemas.WorkoutCreate, db: Session = Depends(get_db)):
     if workout.member_id:
         member = db.query(models.Member).filter(models.Member.id_member == workout.member_id).first()
@@ -38,7 +39,7 @@ def create_workout(workout: schemas.WorkoutCreate, db: Session = Depends(get_db)
     return db_workout
 
 
-@router.put("/{workout_id}", response_model=schemas.WorkoutRead)
+@router.put("/{workout_id}", response_model=schemas.WorkoutRead, dependencies=[Depends(verify_api_key)])
 def update_workout(workout_id: int, workout: schemas.WorkoutUpdate, db: Session = Depends(get_db)):
     db_workout = db.query(models.Workout).filter(models.Workout.id_workout == workout_id).first()
     if not db_workout:
@@ -50,7 +51,7 @@ def update_workout(workout_id: int, workout: schemas.WorkoutUpdate, db: Session 
     return db_workout
 
 
-@router.delete("/{workout_id}", status_code=204)
+@router.delete("/{workout_id}", status_code=204, dependencies=[Depends(verify_api_key)])
 def delete_workout(workout_id: int, db: Session = Depends(get_db)):
     db_workout = db.query(models.Workout).filter(models.Workout.id_workout == workout_id).first()
     if not db_workout:

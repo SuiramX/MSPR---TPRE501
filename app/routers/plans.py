@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
+from security import verify_api_key
 import models, schemas
 
 router = APIRouter(prefix="/plans", tags=["Plans"])
@@ -20,7 +21,7 @@ def get_plan(plan_id: int, db: Session = Depends(get_db)):
     return plan
 
 
-@router.post("/", response_model=schemas.PlanRead, status_code=201)
+@router.post("/", response_model=schemas.PlanRead, status_code=201, dependencies=[Depends(verify_api_key)])
 def create_plan(plan: schemas.PlanCreate, db: Session = Depends(get_db)):
     db_plan = models.Plan(**plan.model_dump())
     db.add(db_plan)
@@ -29,7 +30,7 @@ def create_plan(plan: schemas.PlanCreate, db: Session = Depends(get_db)):
     return db_plan
 
 
-@router.put("/{plan_id}", response_model=schemas.PlanRead)
+@router.put("/{plan_id}", response_model=schemas.PlanRead, dependencies=[Depends(verify_api_key)])
 def update_plan(plan_id: int, plan: schemas.PlanUpdate, db: Session = Depends(get_db)):
     db_plan = db.query(models.Plan).filter(models.Plan.id_plan == plan_id).first()
     if not db_plan:
@@ -41,7 +42,7 @@ def update_plan(plan_id: int, plan: schemas.PlanUpdate, db: Session = Depends(ge
     return db_plan
 
 
-@router.delete("/{plan_id}", status_code=204)
+@router.delete("/{plan_id}", status_code=204, dependencies=[Depends(verify_api_key)])
 def delete_plan(plan_id: int, db: Session = Depends(get_db)):
     db_plan = db.query(models.Plan).filter(models.Plan.id_plan == plan_id).first()
     if not db_plan:
