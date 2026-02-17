@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
+from security import verify_api_key
 import models, schemas
 
 router = APIRouter(prefix="/members", tags=["Members"])
@@ -20,7 +21,7 @@ def get_member(member_id: int, db: Session = Depends(get_db)):
     return member
 
 
-@router.post("/", response_model=schemas.MemberRead, status_code=201)
+@router.post("/", response_model=schemas.MemberRead, status_code=201, dependencies=[Depends(verify_api_key)])
 def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
     db_member = models.Member(**member.model_dump())
     db.add(db_member)
@@ -29,7 +30,7 @@ def create_member(member: schemas.MemberCreate, db: Session = Depends(get_db)):
     return db_member
 
 
-@router.put("/{member_id}", response_model=schemas.MemberRead)
+@router.put("/{member_id}", response_model=schemas.MemberRead, dependencies=[Depends(verify_api_key)])
 def update_member(member_id: int, member: schemas.MemberUpdate, db: Session = Depends(get_db)):
     db_member = db.query(models.Member).filter(models.Member.id_member == member_id).first()
     if not db_member:
@@ -41,7 +42,7 @@ def update_member(member_id: int, member: schemas.MemberUpdate, db: Session = De
     return db_member
 
 
-@router.delete("/{member_id}", status_code=204)
+@router.delete("/{member_id}", status_code=204, dependencies=[Depends(verify_api_key)])
 def delete_member(member_id: int, db: Session = Depends(get_db)):
     db_member = db.query(models.Member).filter(models.Member.id_member == member_id).first()
     if not db_member:

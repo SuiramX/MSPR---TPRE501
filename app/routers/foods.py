@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
+from security import verify_api_key
 import models, schemas
 
 router = APIRouter(prefix="/foods", tags=["Foods"])
@@ -20,7 +21,7 @@ def get_food(food_id: int, db: Session = Depends(get_db)):
     return food
 
 
-@router.post("/", response_model=schemas.FoodRead, status_code=201)
+@router.post("/", response_model=schemas.FoodRead, status_code=201, dependencies=[Depends(verify_api_key)])
 def create_food(food: schemas.FoodCreate, db: Session = Depends(get_db)):
     db_food = models.Food(**food.model_dump())
     db.add(db_food)
@@ -29,7 +30,7 @@ def create_food(food: schemas.FoodCreate, db: Session = Depends(get_db)):
     return db_food
 
 
-@router.put("/{food_id}", response_model=schemas.FoodRead)
+@router.put("/{food_id}", response_model=schemas.FoodRead, dependencies=[Depends(verify_api_key)])
 def update_food(food_id: int, food: schemas.FoodUpdate, db: Session = Depends(get_db)):
     db_food = db.query(models.Food).filter(models.Food.id_food == food_id).first()
     if not db_food:
@@ -41,7 +42,7 @@ def update_food(food_id: int, food: schemas.FoodUpdate, db: Session = Depends(ge
     return db_food
 
 
-@router.delete("/{food_id}", status_code=204)
+@router.delete("/{food_id}", status_code=204, dependencies=[Depends(verify_api_key)])
 def delete_food(food_id: int, db: Session = Depends(get_db)):
     db_food = db.query(models.Food).filter(models.Food.id_food == food_id).first()
     if not db_food:

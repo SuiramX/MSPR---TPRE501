@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from database import get_db
+from security import verify_api_key
 import models, schemas
 
 router = APIRouter(prefix="/exercises", tags=["Exercises"])
@@ -20,7 +21,7 @@ def get_exercise(exercise_id: str, db: Session = Depends(get_db)):
     return exercise
 
 
-@router.post("/", response_model=schemas.ExerciseRead, status_code=201)
+@router.post("/", response_model=schemas.ExerciseRead, status_code=201, dependencies=[Depends(verify_api_key)])
 def create_exercise(exercise: schemas.ExerciseCreate, db: Session = Depends(get_db)):
     existing = db.query(models.Exercise).filter(models.Exercise.id_exercise == exercise.id_exercise).first()
     if existing:
@@ -32,7 +33,7 @@ def create_exercise(exercise: schemas.ExerciseCreate, db: Session = Depends(get_
     return db_exercise
 
 
-@router.put("/{exercise_id}", response_model=schemas.ExerciseRead)
+@router.put("/{exercise_id}", response_model=schemas.ExerciseRead, dependencies=[Depends(verify_api_key)])
 def update_exercise(exercise_id: str, exercise: schemas.ExerciseUpdate, db: Session = Depends(get_db)):
     db_exercise = db.query(models.Exercise).filter(models.Exercise.id_exercise == exercise_id).first()
     if not db_exercise:
@@ -44,7 +45,7 @@ def update_exercise(exercise_id: str, exercise: schemas.ExerciseUpdate, db: Sess
     return db_exercise
 
 
-@router.delete("/{exercise_id}", status_code=204)
+@router.delete("/{exercise_id}", status_code=204, dependencies=[Depends(verify_api_key)])
 def delete_exercise(exercise_id: str, db: Session = Depends(get_db)):
     db_exercise = db.query(models.Exercise).filter(models.Exercise.id_exercise == exercise_id).first()
     if not db_exercise:
