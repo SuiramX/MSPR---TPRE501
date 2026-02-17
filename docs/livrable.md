@@ -326,6 +326,71 @@ CREATE TABLE IF NOT EXISTS "Workout" (
 
 6. # Interface web et tableau de bord interactif 
 
+## 6. Interface web et tableau de bord interactif
+
+### 6.1 Présentation générale
+
+L’interface web et le tableau de bord sont accessibles via le service **Grafana** (port 3000) et, si présent, une interface utilisateur développée en FastAPI (port 8000).
+
+#### Objectifs :
+- Visualiser les données agrégées (nutrition, activité, membres, plans)
+- Suivre l’état de santé de la base et des pipelines ETL
+- Offrir une expérience utilisateur simple pour la consultation et l’analyse
+
+### 6.2 Technologies utilisées
+- **Grafana** : visualisation de données, dashboards interactifs
+- **Prometheus** : collecte des métriques (requêtes, erreurs, temps de réponse)
+- **FastAPI** : endpoints REST pour l’interface web
+
+
+### 6.3 Fonctionnalités principales
+
+#### Dashboards Grafana
+- **Vue d’ensemble PostgreSQL** :
+    - Nombre de requêtes, connexions actives, temps de réponse
+    - Espace disque utilisé, taux d’erreur
+- **Suivi ETL** :
+    - Statut des jobs ETL (succès/échec)
+    - Volume de données traitées par jour
+- **Analyse nutritionnelle** :
+    - Répartition des aliments par catégorie
+    - Top 10 des aliments les plus caloriques
+- **Suivi des membres** :
+    - Nombre de membres actifs
+    - Répartition par genre, âge, IMC
+
+#### Interface web utilisateur (si développée)
+- **Recherche d’aliments** : filtrage par nom, catégorie, calories
+- **Consultation des plans d’entraînement** : affichage personnalisé selon profil
+- **Visualisation des progrès** : graphiques d’évolution (poids, calories brûlées)
+- **Export de données** : téléchargement CSV/JSON
+
+### 6.4 Parcours utilisateur
+1. **Connexion à Grafana** :
+     - URL : http://localhost:3000
+     - Identifiants par défaut : admin / admin123 (à modifier en prod)
+2. **Navigation dans les dashboards** :
+     - Sélection du dashboard « Postgres Overview »
+     - Consultation des métriques clés
+3. **Utilisation de l’interface web** (si présente) :
+     - Accès via http://localhost:8000 ou http://localhost:8000/docs pour l’API
+     - Recherche, consultation, export de données
+
+### 6.5 Exemples de dashboards (captures d’écran à insérer)
+
+![Dashboard PostgreSQL](../grafana/dashboards/postgres-overview.png)
+
+
+### 6.6 Cas d’usage
+- **Administrateur** : surveille la santé du système, détecte les anomalies
+- **Data analyst** : exporte les données pour analyses avancées
+
+### 6.7 Bonnes pratiques et sécurité
+- Restreindre l’accès à Grafana en production (utilisateurs, mots de passe forts)
+- Sécuriser les endpoints de l’API (authentification, CORS)
+- Sauvegarder régulièrement les dashboards personnalisés
+
+---
 7. # Rapport technique et guide de déploiement
 
 ### 7.1 Architecture technique
