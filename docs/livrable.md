@@ -368,9 +368,9 @@ graph TD;
 #### Étapes d’installation
 1. **Cloner le dépôt**
 	 ```bash
-	 git clone <url-du-repo>
+	 git clone https://github.com/SuiramX/MSPR---TPRE501
 	 cd MSPR---TPRE501
-	 git checkout prez
+	 git checkout main
 	 ```
 2. **Configurer les variables d’environnement**
 	 - Copier `.env.example` en `.env` et adapter les valeurs
@@ -387,11 +387,11 @@ graph TD;
 
 #### Exemples de variables d’environnement
 ```env
-DATABASE_URL=postgresql://user:password@db:5432/mspr
-POSTGRES_USER=user
-POSTGRES_PASSWORD=motdepasse
+DATABASE_URL=postgresql://user:logg/mspr
+POSTGRES_USER=logg
+POSTGRES_PASSWORD=paasss
 GF_SECURITY_ADMIN_USER=admin
-GF_SECURITY_ADMIN_PASSWORD=admin123
+GF_SECURITY_ADMIN_PASSWORD=apass
 ```
 
 #### Commandes utiles
