@@ -22,10 +22,6 @@ env/
 # Docker
 *.log
 
-# MkDocs
-site/
-site-gh-pages/
-
 # IDE
 .vscode/
 .idea/
