@@ -326,6 +326,165 @@ CREATE TABLE IF NOT EXISTS "Workout" (
 
 6. # Interface web et tableau de bord interactif 
 
-7. # Rapport technique et guide de déploiement 
+7. # Rapport technique et guide de déploiement
 
-8. # Support de soutenance 
+### 7.1 Architecture technique
+
+#### Schéma global
+L’architecture repose sur une approche modulaire et conteneurisée :
+
+- **Docker Compose** orchestre l’ensemble des services (API, ETL, base de données, monitoring, dashboard)
+- **FastAPI** pour l’API REST
+- **PostgreSQL** pour la base de données relationnelle
+- **ETL Python** pour l’ingestion et la transformation des données
+- **Grafana & Prometheus** pour la supervision et la visualisation
+
+Exemple de schéma :
+
+```mermaid
+graph TD;
+	Utilisateur-->Web[Interface Web]
+	Web-->API[API FastAPI]
+	API-->DB[(PostgreSQL)]
+	ETL-->DB
+	Prometheus-->DB
+	Grafana-->Prometheus
+```
+
+#### Choix techniques
+- Conteneurisation pour la portabilité et la reproductibilité
+- Utilisation de variables d’environnement pour la configuration
+- Séparation des responsabilités (API, ETL, monitoring)
+
+---
+
+### 7.2 Procédure d’installation et de déploiement
+
+#### Prérequis
+- Docker & Docker Compose installés
+- Accès au dépôt du projet (git clone ...)
+- Fichier `.env` correctement renseigné (voir `.env.example`)
+
+#### Étapes d’installation
+1. **Cloner le dépôt**
+	 ```bash
+	 git clone <url-du-repo>
+	 cd MSPR---TPRE501
+	 git checkout prez
+	 ```
+2. **Configurer les variables d’environnement**
+	 - Copier `.env.example` en `.env` et adapter les valeurs
+3. **Lancer les services**
+	 ```bash
+	 docker-compose up -d
+	 ```
+4. **Vérifier le bon démarrage**
+	 ```bash
+	 docker-compose ps
+	 docker-compose logs app
+	 docker-compose logs etl
+	 ```
+
+#### Exemples de variables d’environnement
+```env
+DATABASE_URL=postgresql://user:password@db:5432/mspr
+POSTGRES_USER=user
+POSTGRES_PASSWORD=motdepasse
+GF_SECURITY_ADMIN_USER=admin
+GF_SECURITY_ADMIN_PASSWORD=admin123
+```
+
+#### Commandes utiles
+- Arrêter les services : `docker-compose down`
+- Rebuild complet : `docker-compose build --no-cache`
+- Accéder à un conteneur : `docker-compose exec app bash`
+
+#### Bonnes pratiques
+- Ne jamais versionner le fichier `.env` contenant des secrets
+- Utiliser des volumes Docker pour la persistance des données
+- Documenter chaque modification de configuration
+
+---
+
+### 7.3 Gestion des erreurs et logs
+
+#### Logs applicatifs
+- Les logs de l’API et de l’ETL sont accessibles via :
+	```bash
+	docker-compose logs app
+	docker-compose logs etl
+	```
+- Les logs de la base de données :
+	```bash
+	docker-compose logs db
+	```
+- Les logs de Grafana et Prometheus pour la supervision
+
+#### Gestion des exceptions
+- Les scripts ETL utilisent un logger Python pour tracer les erreurs critiques
+- Exemple dans `main.py` :
+	```python
+	try:
+			engine = get_engine(DB_URL)
+			...
+	except Exception as e:
+			logger.critical(f"Database connection failed: {e}")
+			sys.exit(1)
+	```
+- L’API FastAPI gère les erreurs HTTP avec des réponses structurées
+
+#### Monitoring
+- Grafana permet de visualiser l’état des services et de la base
+- Prometheus collecte les métriques (requêtes, erreurs, etc.)
+
+---
+
+### 7.4 Tests et validation
+
+#### Procédures de test
+- **Tests unitaires** sur les fonctions ETL (extraction, transformation)
+- **Tests d’intégration** : vérification du pipeline complet (données → base → API)
+- **Tests API** : utilisation de `pytest` ou `httpie`/`curl` pour tester les endpoints
+
+#### Exemples de tests
+```bash
+# Test d’un endpoint API
+curl -X GET http://localhost:8000/food
+
+# Test d’un script ETL
+docker-compose exec etl python main.py
+```
+
+#### Jeux de données de validation
+- Fichiers CSV de test dans le dossier `data/`
+- Résultats attendus : nombre de lignes, cohérence des champs
+
+#### Validation du déploiement
+- Checklist :
+	- Tous les conteneurs sont up (`docker-compose ps`)
+	- L’API répond sur le port 8000
+	- Les dashboards Grafana sont accessibles sur le port 3000
+	- Les données sont bien présentes dans la base PostgreSQL
+
+---
+
+---
+
+## 8. Support de soutenance
+
+### 8.1 Slides de présentation
+- Plan, points clés, démonstration
+
+### 8.2 Argumentaire métier et technique
+- Justification des choix, valeur ajoutée
+
+### 8.3 Questions/réponses anticipées
+- Liste de questions potentielles et réponses préparées
+
+---
+
+## Annexes
+- Liens vers les sources, scripts, jeux de données, documentation technique
+- Glossaire des termes techniques
+
+---
