@@ -8,3 +8,4 @@ apscheduler
 prometheus-client
 werkzeug
 openpyxl
+pydantic
