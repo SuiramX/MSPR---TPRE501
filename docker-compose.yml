@@ -71,7 +71,7 @@ services:
 
   etl:
     build:
-      context: ./app
+      context: ./src
       dockerfile: Dockerfile
     container_name: mspr-etl
     environment:
@@ -82,7 +82,7 @@ services:
     volumes:
       - ./src:/app
       - ./data:/data
-    command: ["python", "main.py"]
+    command: ["python", "scheduler.py"]
 
 volumes:
   postgres_data:

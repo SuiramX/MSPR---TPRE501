@@ -5,6 +5,10 @@ import os
 from .utils import logger
 
 def extract_data_files(pattern, data_dir="data"):
+    """
+    Extrait les données de fichiers correspondant à un motif (pattern) dans un répertoire donné.
+    Gère les formats CSV et Excel (xlsx/xls).
+    """
     full_pattern = os.path.join(data_dir, pattern)
     all_files = glob.glob(full_pattern)
     df_list = []
@@ -19,8 +23,10 @@ def extract_data_files(pattern, data_dir="data"):
             else:
                 continue
 
+            # Ajout de la colonne de traçabilité pour identifier le fichier source
             df["source_file"] = os.path.basename(filename)
             
+            # Nettoyage des colonnes fantômes (souvent dues à Excel)
             df = df.loc[:, ~df.columns.str.contains("^Unnamed")]
             df_list.append(df)
             logger.info(f"Loaded {os.path.basename(filename)} ({len(df)} rows)")
@@ -30,12 +36,15 @@ def extract_data_files(pattern, data_dir="data"):
     if not df_list:
         return pd.DataFrame()
 
+    # Fusion de tous les fichiers extraits en un seul DataFrame
     return pd.concat(df_list, ignore_index=True)
 
 def extract_food_data(data_dir="data"):
+    """Extraction des données nutritionnelles."""
     return extract_data_files("food_data_group*", data_dir)
 
 def extract_exercises(data_dir="data"):
+    """Extraction des données d'exercices depuis un fichier JSON."""
     json_path = os.path.join(data_dir, "exercises.json")
     if not os.path.exists(json_path):
         logger.warning(f"{json_path} not found.")
@@ -55,7 +64,9 @@ def extract_exercises(data_dir="data"):
         return []
 
 def extract_gym_members(data_dir="data"):
+    """Extraction des données de suivi des membres."""
     return extract_data_files("members_tracking*", data_dir)
 
 def extract_plan_data(data_dir="data"):
+    """Extraction des plans d'entraînement et nutritionnels."""
     return extract_data_files("workout_plans*", data_dir)

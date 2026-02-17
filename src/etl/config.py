@@ -4,6 +4,7 @@ DB_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db:5432/mspr")
 
 DATA_DIR = "/data"
 
+# Mapping pour harmoniser les noms de colonnes des données nutritionnelles
 FOOD_MAPPING = {
     "Caloric Value": "calories",
     "Fat": "fats",
@@ -16,6 +17,7 @@ FOOD_MAPPING = {
     "food": "name"
 }
 
+# Mapping pour les données de suivi des membres (Gym Members)
 MEMBER_TRACKING_MAPPING = {
     "Age": "age", 
     "Gender": "gender", 
@@ -30,6 +32,7 @@ MEMBER_TRACKING_MAPPING = {
     "Experience_Level": "experience_level"
 }
 
+# Mapping pour les plans d'entraînement et d'alimentation
 PLAN_MAPPING = {
     "Gender": "gender",
     "Goal": "goal",
@@ -38,8 +41,10 @@ PLAN_MAPPING = {
     "Meal Plan": "recommended_meal_plan"
 }
 
+# Colonnes pour la traçabilité des données
 TRACEABILITY_COLS = ["source_file", "ingested_at"]
 
+# Définition des schémas cibles pour chaque table en base de données
 SCHEMAS = {
     "Food": ["name", "category", "calories", "proteins", "carbohydrates", "fats", "fiber", "sodium", "sugar"] + TRACEABILITY_COLS,
     "Exercise": ["id_exercise", "name", "type", "muscle_group", "equipment", "difficulty", "instructions", "image_url"] + TRACEABILITY_COLS,
