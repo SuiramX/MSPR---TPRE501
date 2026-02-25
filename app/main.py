@@ -18,12 +18,12 @@ app.include_router(plans.router)
 app.include_router(exports.router)
 
 
-@app.get("/", tags=["Health"])
+@app.get("/", tags=["Health"], include_in_schema=False)
 def read_root():
     return {"message": "HealthAI Coach API is running", "docs": "/docs"}
 
 
-@app.get("/metrics", tags=["Monitoring"])
+@app.get("/metrics", tags=["Monitoring"], include_in_schema=False)
 def metrics():
     return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
