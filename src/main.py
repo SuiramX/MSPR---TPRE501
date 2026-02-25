@@ -1,4 +1,5 @@
 import sys
+import time
 from etl.extractors import extract_food_data, extract_exercises, extract_gym_members, extract_plan_data
 from etl.transformers import (transform_food_data, transform_exercises, 
                               transform_members_and_workouts, transform_plan_data)
@@ -6,19 +7,8 @@ from etl.loaders import load_data, get_engine
 from etl.config import DB_URL, DATA_DIR
 from etl.utils import logger
 import datetime
-
 from sqlalchemy import text
-
-def log_job(engine, status, details=None):
-    """Log l'état d'exécution du pipeline dans la table 'etl_logs'."""
-    try:
-        with engine.begin() as conn:
-            conn.execute(
-                text("INSERT INTO etl_logs (job_name, status, details) VALUES (:job_name, :status, :details)"),
-                {"job_name": "Full ETL", "status": status, "details": details}
-            )
-    except Exception as e:
-        logger.error(f"Failed to log job status to DB: {e}")
+from etl.metrics import ETL_JOB_DURATION, ETL_JOB_STATUS, ETL_JOB_FAILURES, ETL_JOB_LAST_SUCCESS
 
 def run_etl():
     """
@@ -26,9 +16,15 @@ def run_etl():
     1. Connexion à la base de données.
     2. Extraction et Transformation de chaque source.
     3. Chargement des données transformées en base.
-    4. Gestion des erreurs et journalisation.
+    4. Gestion des erreurs et journalisation via Prometheus.
     """
     logger.info("=== Starting Refactored ETL Pipeline ===")
+    
+    # Démarrer le chrono pour le pipeline
+    start_time = time.time()
+    
+    # Signaler que l'ETL est en cours (2)
+    ETL_JOB_STATUS.set(2)
     
     try:
         engine = get_engine(DB_URL)
@@ -36,10 +32,12 @@ def run_etl():
             logger.info("Database connection verified.")
     except Exception as e:
         logger.critical(f"Database connection failed: {e}")
+        ETL_JOB_STATUS.set(0)
+        ETL_JOB_FAILURES.inc()
+        # Enregistrer la durée même en cas d'échec
+        ETL_JOB_DURATION.set(time.time() - start_time)
         return False
 
-    log_job(engine, "STARTED")
-    
     try:
         # Pipeline Nutrition
         food_df = transform_food_data(extract_food_data(DATA_DIR))
@@ -60,11 +58,20 @@ def run_etl():
         load_data(plan_df, "Plan", engine)
 
         logger.info("=== ETL Pipeline Finished ===")
-        log_job(engine, "SUCCESS")
+        
+        # Succès de l'ETL
+        ETL_JOB_STATUS.set(1)
+        ETL_JOB_LAST_SUCCESS.set(time.time())
+        ETL_JOB_DURATION.set(time.time() - start_time)
         return True
+
     except Exception as e:
         logger.error(f"ETL Pipeline failed: {e}")
-        log_job(engine, "FAILED", str(e))
+        
+        # Echec de l'ETL
+        ETL_JOB_STATUS.set(0)
+        ETL_JOB_FAILURES.inc()
+        ETL_JOB_DURATION.set(time.time() - start_time)
         return False
 
 if __name__ == "__main__":
