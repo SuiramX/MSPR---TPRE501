@@ -10,14 +10,6 @@ Ce document décrit un guide d'installation complet pour exécuter le projet sur
 - `pip` et `virtualenv` (si exécution locale)
 - Accès administrateur si vous devez ouvrir des ports dans le pare-feu
 
-**Fichiers importants**
-
-- [docker-compose.yml](docker-compose.yml)
-- [app/Dockerfile](app/Dockerfile)
-- [app/main.py](app/main.py)
-- [app/requirements.txt](app/requirements.txt)
-- [init.sql](init.sql)
-
 **Ports exposés**
 
 - 8000/tcp — application FastAPI (uvicorn)
