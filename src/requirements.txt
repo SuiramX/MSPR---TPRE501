@@ -5,3 +5,6 @@ psycopg2-binary
 requests
 schedule
 openpyxl
+prometheus-client
+fastapi
+uvicorn

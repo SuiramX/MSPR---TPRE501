@@ -14,3 +14,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ["app:8000"]
+
+  - job_name: "etl_job"
+    static_configs:
+      - targets: ["etl:8000"]
