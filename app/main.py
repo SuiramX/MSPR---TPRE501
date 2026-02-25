@@ -7,6 +7,7 @@ app = FastAPI(
     title="HealthAI Coach API",
     description="API REST backend pour la plateforme HealthAI Coach",
     version="1.0.0",
+    swagger_ui_parameters={"defaultModelsExpandDepth": -1},
 )
 
 app.include_router(members.router)
