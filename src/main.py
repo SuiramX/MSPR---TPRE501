@@ -39,23 +39,31 @@ def run_etl():
         return False
 
     try:
-        # Pipeline Nutrition
+        # 1. Pipeline Nutrition
         food_df = transform_food_data(extract_food_data(DATA_DIR))
-        load_data(food_df, "Food", engine)
+        load_data(food_df, "Food", engine, truncate=True)
         
-        # Pipeline Exercices
+        # 2. Pipeline Exercices
         exercise_df = transform_exercises(extract_exercises(DATA_DIR))
-        load_data(exercise_df, "Exercise", engine)
+        load_data(exercise_df, "Exercise", engine, truncate=True)
         
-        # Pipeline Membres et Entraînements
+        # 3. Pipeline Membres et Entraînements (Gestion de l'intégrité référentielle)
         raw_tracking = extract_gym_members(DATA_DIR)
         member_df, workout_df = transform_members_and_workouts(raw_tracking)
-        load_data(member_df, "Member", engine)
-        load_data(workout_df, "Workout", engine)
+        
+        # On vide d'abord les entraînements (Workout) pour pouvoir vider les membres (Member)
+        # Mais on ne charge pas encore ! On prépare juste le terrain.
+        from sqlalchemy import text
+        with engine.begin() as conn:
+            conn.execute(text('DELETE FROM "Workout"'))
+            conn.execute(text('DELETE FROM "Member"'))
+            
+        load_data(member_df, "Member", engine, truncate=False) # Déjà vidé
+        load_data(workout_df, "Workout", engine, truncate=False) # Déjà vidé
 
-        # Pipeline Plans Personnalisés
+        # 4. Pipeline Plans Personnalisés
         plan_df = transform_plan_data(extract_plan_data(DATA_DIR))
-        load_data(plan_df, "Plan", engine)
+        load_data(plan_df, "Plan", engine, truncate=True)
 
         logger.info("=== ETL Pipeline Finished ===")
         
