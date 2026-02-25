@@ -1,22 +1,19 @@
-# 5. API REST documentée
 
-## Vue d'ensemble
+
+<p align="center">
+	<img src="https://img.shields.io/badge/Python-3.10+-blue?logo=python" alt="Python">
+	<img src="https://img.shields.io/badge/FastAPI-0.110+-green?logo=fastapi" alt="FastAPI">
+	<img src="https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql" alt="PostgreSQL">
+	<img src="https://img.shields.io/badge/Prometheus-Monitoring-orange?logo=prometheus" alt="Prometheus">
+	<img src="https://img.shields.io/badge/Grafana-Dashboard-F46800?logo=grafana" alt="Grafana">
+</p>
+
+HealthAI Coach 
+
 
 L'API REST HealthAI Coach est développée avec **FastAPI** et expose les données de la plateforme stockées dans **PostgreSQL**. Elle tourne sur le port `8000` et génère automatiquement une documentation interactive disponible sur `/docs` (Swagger UI).
 
-**Stack technique :**
 
-| Composant | Technologie |
-|---|---|
-| Framework API | FastAPI + Uvicorn |
-| ORM | SQLAlchemy |
-| Base de données | PostgreSQL 15 |
-| Validation des données | Pydantic v2 |
-| Export CSV | Pandas |
-| Monitoring | Prometheus + Grafana |
-| Containerisation | Docker / Docker Compose |
-
----
 
 ## Accès à l'API
 
@@ -44,13 +41,13 @@ En cas de clé invalide ou absente → réponse `403 Forbidden`.
 
 Profils utilisateurs (âge, genre, poids, taille, IMC, % de graisse corporelle).
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/members/` | Non | Liste des membres (pagination `skip`/`limit`) |
-| GET | `/members/{id}` | Non | Détail d'un membre |
-| POST | `/members/` | Oui | Créer un membre |
-| PUT | `/members/{id}` | Oui | Modifier un membre |
-| DELETE | `/members/{id}` | Oui | Supprimer un membre |
+| Méthode | Route           | Auth | Description                                   |
+| ------- | --------------- | ---- | --------------------------------------------- |
+| GET     | `/members/`     | Non  | Liste des membres (pagination `skip`/`limit`) |
+| GET     | `/members/{id}` | Non  | Détail d'un membre                            |
+| POST    | `/members/`     | Oui  | Créer un membre                               |
+| PUT     | `/members/{id}` | Oui  | Modifier un membre                            |
+| DELETE  | `/members/{id}` | Oui  | Supprimer un membre                           |
 
 ---
 
@@ -58,13 +55,13 @@ Profils utilisateurs (âge, genre, poids, taille, IMC, % de graisse corporelle).
 
 Base nutritionnelle : aliments avec leurs valeurs nutritionnelles (calories, protéines, glucides, lipides, fibres, sodium, sucre).
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/foods/` | Non | Liste des aliments |
-| GET | `/foods/{id}` | Non | Détail d'un aliment |
-| POST | `/foods/` | Oui | Créer un aliment |
-| PUT | `/foods/{id}` | Oui | Modifier un aliment |
-| DELETE | `/foods/{id}` | Oui | Supprimer un aliment |
+| Méthode | Route         | Auth | Description          |
+| ------- | ------------- | ---- | -------------------- |
+| GET     | `/foods/`     | Non  | Liste des aliments   |
+| GET     | `/foods/{id}` | Non  | Détail d'un aliment  |
+| POST    | `/foods/`     | Oui  | Créer un aliment     |
+| PUT     | `/foods/{id}` | Oui  | Modifier un aliment  |
+| DELETE  | `/foods/{id}` | Oui  | Supprimer un aliment |
 
 ---
 
@@ -75,13 +72,13 @@ Catalogue d'exercices sportifs (type, groupe musculaire, équipement requis, niv
 > La clé primaire est une chaîne de caractères (`id_exercise`), pas un entier.
 > La création vérifie l'unicité de l'id → `409 Conflict` si l'exercice existe déjà.
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/exercises/` | Non | Liste des exercices |
-| GET | `/exercises/{id}` | Non | Détail d'un exercice |
-| POST | `/exercises/` | Oui | Créer un exercice |
-| PUT | `/exercises/{id}` | Oui | Modifier un exercice |
-| DELETE | `/exercises/{id}` | Oui | Supprimer un exercice |
+| Méthode | Route             | Auth | Description           |
+| ------- | ----------------- | ---- | --------------------- |
+| GET     | `/exercises/`     | Non  | Liste des exercices   |
+| GET     | `/exercises/{id}` | Non  | Détail d'un exercice  |
+| POST    | `/exercises/`     | Oui  | Créer un exercice     |
+| PUT     | `/exercises/{id}` | Oui  | Modifier un exercice  |
+| DELETE  | `/exercises/{id}` | Oui  | Supprimer un exercice |
 
 ---
 
@@ -89,14 +86,14 @@ Catalogue d'exercices sportifs (type, groupe musculaire, équipement requis, niv
 
 Sessions d'entraînement liées aux membres (type, durée, calories brûlées, fréquence, niveau d'expérience).
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/workouts/` | Non | Liste des sessions |
-| GET | `/workouts/{id}` | Non | Détail d'une session |
-| GET | `/workouts/member/{member_id}` | Non | Toutes les sessions d'un membre |
-| POST | `/workouts/` | Oui | Créer une session (vérifie que le membre existe) |
-| PUT | `/workouts/{id}` | Oui | Modifier une session |
-| DELETE | `/workouts/{id}` | Oui | Supprimer une session |
+| Méthode | Route                          | Auth | Description                                      |
+| ------- | ------------------------------ | ---- | ------------------------------------------------ |
+| GET     | `/workouts/`                   | Non  | Liste des sessions                               |
+| GET     | `/workouts/{id}`               | Non  | Détail d'une session                             |
+| GET     | `/workouts/member/{member_id}` | Non  | Toutes les sessions d'un membre                  |
+| POST    | `/workouts/`                   | Oui  | Créer une session (vérifie que le membre existe) |
+| PUT     | `/workouts/{id}`               | Oui  | Modifier une session                             |
+| DELETE  | `/workouts/{id}`               | Oui  | Supprimer une session                            |
 
 ---
 
@@ -104,13 +101,13 @@ Sessions d'entraînement liées aux membres (type, durée, calories brûlées, f
 
 Plans personnalisés de santé (objectif, catégorie IMC, programme sportif et alimentaire recommandé).
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/plans/` | Non | Liste des plans |
-| GET | `/plans/{id}` | Non | Détail d'un plan |
-| POST | `/plans/` | Oui | Créer un plan |
-| PUT | `/plans/{id}` | Oui | Modifier un plan |
-| DELETE | `/plans/{id}` | Oui | Supprimer un plan |
+| Méthode | Route         | Auth | Description       |
+| ------- | ------------- | ---- | ----------------- |
+| GET     | `/plans/`     | Non  | Liste des plans   |
+| GET     | `/plans/{id}` | Non  | Détail d'un plan  |
+| POST    | `/plans/`     | Oui  | Créer un plan     |
+| PUT     | `/plans/{id}` | Oui  | Modifier un plan  |
+| DELETE  | `/plans/{id}` | Oui  | Supprimer un plan |
 
 ---
 
@@ -118,21 +115,21 @@ Plans personnalisés de santé (objectif, catégorie IMC, programme sportif et a
 
 Export des données nettoyées au format CSV. Les colonnes techniques (`source_file`, `ingested_at`) sont exclues de l'export.
 
-| Méthode | Route | Auth | Fichier généré |
-|---|---|---|---|
-| GET | `/export/members/csv` | Oui | `members.csv` |
-| GET | `/export/foods/csv` | Oui | `foods.csv` |
-| GET | `/export/exercises/csv` | Oui | `exercises.csv` |
-| GET | `/export/workouts/csv` | Oui | `workouts.csv` |
-| GET | `/export/plans/csv` | Oui | `plans.csv` |
+| Méthode | Route                   | Auth | Fichier généré  |
+| ------- | ----------------------- | ---- | --------------- |
+| GET     | `/export/members/csv`   | Oui  | `members.csv`   |
+| GET     | `/export/foods/csv`     | Oui  | `foods.csv`     |
+| GET     | `/export/exercises/csv` | Oui  | `exercises.csv` |
+| GET     | `/export/workouts/csv`  | Oui  | `workouts.csv`  |
+| GET     | `/export/plans/csv`     | Oui  | `plans.csv`     |
 
 ---
 
 ### Monitoring — Endpoints système
 
-| Route | Auth | Description |
-|---|---|---|
-| `GET /` | Non | Vérifie que l'API est en ligne |
-| `GET /metrics` | Non | Métriques Prometheus |
-| `GET /docs` | Non | Documentation Swagger interactive |
-| `GET /redoc` | Non | Documentation ReDoc |
+| Route          | Auth | Description                       |
+| -------------- | ---- | --------------------------------- |
+| `GET /`        | Non  | Vérifie que l'API est en ligne    |
+| `GET /metrics` | Non  | Métriques Prometheus              |
+| `GET /docs`    | Non  | Documentation Swagger interactive |
+| `GET /redoc`   | Non  | Documentation ReDoc               |
