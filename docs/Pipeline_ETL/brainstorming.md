@@ -3,7 +3,7 @@ Pipeline ETL (extract, transform, load)
 ## Objectifs :
 
 
-Extraire des datas
+Extraire des datas :
 
 Transformer les datas pour notre usage
 
