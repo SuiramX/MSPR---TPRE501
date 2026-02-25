@@ -1,57 +1,64 @@
-MSPR - Guide d'installation
+# MSPR — Guide d'installation (complet et clair)
 
-Ce document décrit un guide d'installation complet pour exécuter le projet sur Windows ou Linux, en local (venv) ou avec Docker / Docker Compose. Il inclut les ports exposés, commandes utiles et instructions pour la base de données PostgreSQL, Prometheus et Grafana.
+Ce document décrit comment installer et lancer le projet en deux modes:
 
-**Prérequis**
+- Mode A (recommandé) : Docker + Docker Compose — reproduit en local PostgreSQL, Prometheus et Grafana.
+- Mode B : Exécution locale (venv) — vous gérez PostgreSQL, Prometheus et Grafana séparément.
+Ports exposés
+
+- `8000/tcp` — FastAPI (uvicorn)
+- `5432/tcp` — PostgreSQL
+- `9090/tcp` — Prometheus
+- `3000/tcp` — Grafana
+
+Pré-requis
 
 - Git (optionnel)
-- Docker et Docker Compose (si vous utilisez les conteneurs)
-- Python 3.9 (le Dockerfile utilise `python:3.9-slim`) si vous exécutez l'application localement
-- `pip` et `virtualenv` (si exécution locale)
-- Accès administrateur si vous devez ouvrir des ports dans le pare-feu
+- Docker + Docker Compose (si vous utilisez les conteneurs)
+- Python 3.9 (si exécution locale — le Dockerfile utilise `python:3.9-slim`)
+- `pip`, `virtualenv` (exécution locale)
 
-**Ports exposés**
+IMPORTANT: adaptez les commandes ci-dessous selon votre OS (Windows vs Linux).
 
-- 8000/tcp — application FastAPI (uvicorn)
-- 5432/tcp — PostgreSQL
-- 9090/tcp — Prometheus
-- 3000/tcp — Grafana
+---
 
-Installation et exécution
--------------------------
+Mode A — Docker Compose (rapide & isolé)
 
-1) Option recommandée : Docker + Docker Compose (Windows et Linux)
+1) Cloner le dépôt (si nécessaire) :
 
-Privilèges : installez Docker Desktop sur Windows ou Docker Engine + Docker Compose sur Linux.
+```bash
+git clone https://github.com/SuiramX/MSPR---TPRE501.git
+cd MSPR---TPRE501
+```
 
-Commandes (depuis la racine du projet) :
+2) Démarrer tous les services :
 
 ```bash
 docker-compose up --build -d
 ```
 
-Vérifier les conteneurs et logs :
+Accès après démarrage (exemples) :
 
-```bash
-docker-compose ps
-docker-compose logs -f app
-```
+- FastAPI: http://localhost:8000/
+- Prometheus UI: http://localhost:9090/
+- Grafana: http://localhost:3000/ (admin/admin)
 
-Arrêter et supprimer :
+Notes Docker
 
-```bash
-docker-compose down
-```
+- Service `app` construit depuis `app/Dockerfile` et expose `8000`.
+- PostgreSQL : utilisateur `user`, mot de passe `password`, base `mspr`. Le premier démarrage exécute `init.sql`.
+- Prometheus : configuré via `prometheus/prometheus.yml` monté dans le conteneur.
+- Grafana : accès web sur le port `3000` (identifiants par défaut Grafana : `admin`/`admin` — changez le mot de passe au premier lancement).
 
-Notes Docker :
-- Le service `app` est construit à partir de `app/Dockerfile` et écoute sur le port `8000`.
-- PostgreSQL est configuré par `docker-compose.yml` (utilisateur: `user`, mot de passe: `password`, DB: `mspr`) et charge `init.sql` pour initialiser la base.
 
-2) Option locale (sans Docker) — Windows et Linux
 
-Prérequis : Python 3.9 installé, PostgreSQL (ou utiliser un conteneur PostgreSQL séparé).
+---
 
-Sous Linux / macOS (bash) :
+Mode B — Exécution locale (venv)
+
+1) Préparez un environnement virtuel
+
+Linux / macOS :
 
 ```bash
 python3 -m venv .venv
@@ -60,7 +67,7 @@ pip install --upgrade pip
 pip install -r app/requirements.txt
 ```
 
-Sous Windows (PowerShell) :
+Windows (PowerShell) :
 
 ```powershell
 python -m venv .venv
@@ -69,53 +76,71 @@ python -m pip install --upgrade pip
 python -m pip install -r app\requirements.txt
 ```
 
-Configuration de la base PostgreSQL :
+2) PostgreSQL
 
-- Soit installez PostgreSQL localement et créez la base `mspr` avec l'utilisateur précisé, soit lancez rapidement Postgres en conteneur :
+- Option A (local): installez PostgreSQL et créez la base `mspr` :
 
-```bash
-docker run -d --name mspr-db -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mspr -p 5432:5432 -v "$PWD/postgres_data":/var/lib/postgresql/data postgres:15
+```sql
+-- en psql
+CREATE USER "user" WITH PASSWORD 'password';
+CREATE DATABASE mspr OWNER "user";
 ```
 
-Ensuite, pour appliquer `init.sql` (si vous avez Postgres local ou en conteneur) :
+Appliquer le script d'initialisation :
 
 ```bash
 psql -h localhost -U user -d mspr -f init.sql
 ```
 
-Lancer l'application localement :
+- Option B (conteneur si vous ne voulez pas installer PostgreSQL localement) :
+
+```bash
+docker run -d --name mspr-db \
+  -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=mspr \
+  -p 5432:5432 -v "$PWD/postgres_data":/var/lib/postgresql/data postgres:15
+```
+
+3) Variables d'environnement
+
+Exportez `DATABASE_URL` (exemples) :
+
+Linux / macOS:
+
+```bash
+export DATABASE_URL="postgresql://user:password@localhost:5432/mspr"
+```
+
+Windows PowerShell:
+
+```powershell
+$env:DATABASE_URL = "postgresql://user:password@localhost:5432/mspr"
+```
+
+4) Lancer l'application
 
 ```bash
 cd app
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-3) Variables d'environnement
+Accès:
 
-- Le projet attend une variable `DATABASE_URL` au format :
+- FastAPI: http://localhost:8000/
 
-```
-postgresql://user:password@db:5432/mspr
-```
+---
 
-- En local, adaptez `db` en `localhost` si vous utilisez PostgreSQL local.
+Pare-feu — ouverture des ports (exemples)
 
-4) Pare-feu / ouverture des ports
-
-Windows (PowerShell, en tant qu'administrateur) :
+Windows (PowerShell en administrateur) :
 
 ```powershell
-# Autoriser le port 8000
 netsh advfirewall firewall add rule name="MSPR App 8000" dir=in action=allow protocol=TCP localport=8000
-# PostgreSQL
 netsh advfirewall firewall add rule name="MSPR Postgres 5432" dir=in action=allow protocol=TCP localport=5432
-# Prometheus
 netsh advfirewall firewall add rule name="Prometheus 9090" dir=in action=allow protocol=TCP localport=9090
-# Grafana
 netsh advfirewall firewall add rule name="Grafana 3000" dir=in action=allow protocol=TCP localport=3000
 ```
 
-Linux (Ubuntu avec `ufw`) :
+Linux (Ubuntu + ufw) :
 
 ```bash
 sudo ufw allow 8000/tcp
@@ -125,44 +150,53 @@ sudo ufw allow 3000/tcp
 sudo ufw reload
 ```
 
-Si vous utilisez `firewalld` (CentOS/RHEL) :
+---
+
+Vérifications & dépannage rapide
+
+- Voir logs Docker :
 
 ```bash
-sudo firewall-cmd --add-port=8000/tcp --permanent
-sudo firewall-cmd --add-port=5432/tcp --permanent
-sudo firewall-cmd --add-port=9090/tcp --permanent
-sudo firewall-cmd --add-port=3000/tcp --permanent
-sudo firewall-cmd --reload
-```
-
-5) Accès aux services
-
-- Application FastAPI : http://<host>:8000/
-- Metrics Prometheus : http://<host>:9090/
-- Grafana UI : http://<host>:3000/  (identifiants par défaut si aucun provisionnement)
-- PostgreSQL : port 5432 (connexion via psql ou outils graphiques)
-
-6) Commandes utiles récapitulatives
-
-```bash
-# Construire et démarrer (arrière-plan)
-docker-compose up --build -d
-# Voir les logs du service app
 docker-compose logs -f app
-# Arrêter et nettoyer
-docker-compose down
-# Lancer localement (venv)
-python -m venv .venv && source .venv/bin/activate && pip install -r app/requirements.txt && cd app && uvicorn main:app --reload --port 8000
+docker logs mspr-db   # pour PostgreSQL container
 ```
 
-7) Dépannage rapide
+- En local : vérifier que `DATABASE_URL` est correct et que Postgres écoute sur `localhost:5432`.
+- Si l'application ne démarre pas, relancer `uvicorn` avec `--reload` pour voir les erreurs.
 
-- Si l'application ne démarre pas, vérifier `docker-compose logs app` ou `docker logs mspr-app`.
-- Vérifiez que PostgreSQL est joignable depuis l'application (host, port, credentials).
-- Vérifiez la version de Python si installation locale (utiliser la version 3.9 recommandée par le Dockerfile).
+Points spécifiques Prometheus / Grafana
 
-Si vous souhaitez que je :
-- exécute les containers pour vous ici, ou
-- ajoute un script d'initialisation pour Grafana/Prometheus, ou
-- crée des instructions pour déployer sur un serveur (systemd / service), dites-le et je m'en occupe.
+- Prometheus lit sa config depuis `prometheus/prometheus.yml` (monté via Docker Compose).
+- Grafana stocke ses données dans le volume `grafana_data` défini dans `docker-compose.yml`. Par défaut Grafana user/password = `admin`/`admin`.
+
+Commandes récapitulatives
+
+```bash
+# Docker (recommandé)
+docker-compose up --build -d
+docker-compose ps
+docker-compose logs -f app
+docker-compose down
+
+# Local
+python -m venv .venv
+source .venv/bin/activate   # ou .\.venv\Scripts\Activate.ps1
+pip install -r app/requirements.txt
+export DATABASE_URL="postgresql://user:password@localhost:5432/mspr"
+cd app && uvicorn main:app --reload --port 8000
+```
+
+Annexes
+
+- Fichier d'initialisation SQL: [init.sql](init.sql)
+- Fichier Docker Compose: [docker-compose.yml](docker-compose.yml)
+
+Si vous voulez que je :
+
+- lance les containers ici (`docker-compose up --build -d`),
+- ajoute un script d'initialisation pour Grafana (datasource / dashboard provisioning), ou
+- génère un service systemd ou un fichier `docker-compose.override.yml` personnalisé,
+
+dites-moi lequel et je l'ajoute.
+
 
