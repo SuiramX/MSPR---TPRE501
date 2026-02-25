@@ -8,7 +8,7 @@
 	<img src="https://img.shields.io/badge/Grafana-Dashboard-F46800?logo=grafana" alt="Grafana">
 </p>
 
-HealthAI Coach 
+# HealthAI Coach 
 
 
 L'API REST HealthAI Coach est développée avec **FastAPI** et expose les données de la plateforme stockées dans **PostgreSQL**. Elle tourne sur le port `8000` et génère automatiquement une documentation interactive disponible sur `/docs` (Swagger UI).
