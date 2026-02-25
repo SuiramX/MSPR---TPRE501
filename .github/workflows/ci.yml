@@ -2,27 +2,32 @@ name: ci
 on:
   push:
     branches:
-      - main
+      - main # Déclenche l'action lors d'un push sur la branche principale
+
 permissions:
-  contents: write
+  contents: write # Autorise l'écriture pour pousser sur la branche gh-pages
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # 1. Récupération du code source
       - uses: actions/checkout@v4
-      - name: Configure Git Credentials
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      # 2. Configuration de l'environnement Python
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+
+      # 3. Cache des dépendances pour accélérer les futurs builds
       - uses: actions/cache@v4
         with:
-          key: mkdocs-material-${{ env.cache_id }}
+          key: ${{ github.ref }}
           path: .cache
-          restore-keys: |
-            mkdocs-material-
+
+      # 4. Installation de MkDocs et du thème Material (standard open-source)
       - run: pip install mkdocs-material
+
+      # 5. Déploiement automatique
+      # Cette commande build le site et pousse le HTML vers la branche 'gh-pages'
       - run: mkdocs gh-deploy --force
