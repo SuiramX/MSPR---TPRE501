@@ -1,4 +1,5 @@
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
+from etl.utils import logger
 
 def get_engine(db_url):
     """Crée et retourne un moteur de connexion SQLAlchemy."""
