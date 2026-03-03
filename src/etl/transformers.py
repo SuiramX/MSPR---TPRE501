@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import re
 from .utils import logger, validate_columns
 from .config import FOOD_MAPPING, MEMBER_TRACKING_MAPPING, PLAN_MAPPING, SCHEMAS
